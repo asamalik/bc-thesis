@@ -1,0 +1,14 @@
+\chapter{Introduction}
+OpenStack is a cloud operating system with distributed architecture. Deploying OpenStack can be a very complex task requiring deep knowledge in distributed system architecture, networking, storage, and virtualisation. Because of its complexity, it is very hard to create an installation script. These days, OpenStack does not come with an installer. However, there are several projects that try to simplify the process. These solutions are often limited and might not be suitable for production use.
+
+The goal of this thesis is to design and implement an Ansible installation script, called Ansible Playbook, which would enable to install basic OpenStack deployment and would also offer flexibility in configuring more complex scenarios by reusing the Ansible Roles designed in this thesis, and building new, more complex ones on top of them. In other words, the Ansible Playbook designed and implemented here would create a decent starting point for more complex project.
+
+\section{Structure of the document}
+
+This thesis has been divided into five chapters, excluding this Introduction  and Conclusion \ref{ch:conclusion}.
+
+The second chapter, called Technology Overview \ref{ch:overview}, introduces the reader into the technologies that will be used in this thesis. The third chapter \ref{ch:arch} describes the OpenStack architecture, the core services, and how they communicate with each other.
+
+The fourth chapter \ref{ch:existing} offers a short analysis of two existing solutions to deploy the OpenStack cloud and explains their limitations.
+
+Following chapter \ref{ch:implementation} describes an implementation design of the Ansible Playbook, and also describes a custom architecture, which would be used as a reference and a testing environment. The sixth chapter \ref{ch:testing} shows some details of the implementation process and testing.

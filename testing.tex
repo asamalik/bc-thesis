@@ -1,0 +1,86 @@
+\chapter{Implementation and Testing}
+\label{ch:testing}
+
+
+\section{Third-party Modules in the Playbook}
+
+The implementation requires two third-party modules for managing Keystone endpoints and services. Both modules have been created by Davide Guerri <davide.guerri@gmail.com>, licensed under Apache License, Version 2.0, and are included as part of the playbook.
+
+\section{Testing of the Deployment}
+\subsection{Description of the Host Environment}
+
+The reference testing environment consists of three virtual machines with the following specification:
+
+\subsubsection*{Controller}
+
+\begin{itemize}
+  \item{CPUs: 2}
+  \item{RAM: 2048 MB}
+  \item{Disk: 30 GB}
+\end{itemize}
+
+\subsubsection*{Compute}
+
+\begin{itemize}
+  \item{CPUs: 4}
+  \item{RAM: 6144 MB}
+  \item{Disk: 30 GB}
+\end{itemize}
+
+\subsubsection*{Storage}
+
+\begin{itemize}
+  \item{CPUs: 1}
+  \item{RAM: 1536 MB}
+  \item{Disk1: 20 GB}
+  \item{Disk2: 60 GB}
+\end{itemize}
+
+These virtual machines were running on a laptop with the following configuration:
+
+\begin{itemize}
+  \item{CPU: 2.8 GHz Intel i7 4980HQ}
+  \item{RAM: 16 GB}
+  \item{SSD: PCIe 3.0 x4 8.0 GT/s (25.6 Gbit/s)}
+\end{itemize}
+
+\subsection{Using Ansible with Vagrant}
+
+Vagrant is a tool that manages virtual machines for development environment. It uses private key authentication and generates its own keys for the virtual machines.
+
+First, Vagrant needs to be configured to use a single private key to authenticate to all three virtual machines. To achieve this, the following line needs to be put in the \texttt{Vagrantfile}:
+
+
+\begin{lstlisting}
+config.ssh.insert_key = false
+\end{lstlisting}
+
+
+
+Vagrant routes SSH ports of the guest virtual machines to the localhost and uses different port for each. A command \texttt{vagrant ssh-config} will show the ports of each virtual machine. These ports need to be used in the \texttt{hosts} file. An example might look like this:
+
+\begin{lstlisting}
+controller ansible_ssh_host=127.0.0.1 ansible_ssh_port=2222
+compute1 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2200
+compute1 ansible_ssh_host=127.0.0.1 ansible_ssh_port=2201
+\end{lstlisting}
+
+The last step is to configure Ansible to use the correct user name and private key. This can be done by creating file called \texttt{ansible.cfg} with the following content:
+
+\begin{lstlisting}
+[defaults]
+hostfile = hosts
+remote_user = vagrant
+private_key_file = ~/.vagrant.d/insecure_private_key
+host_key_checking = False
+\end{lstlisting}
+
+\subsection{Running the Deployment}
+
+To use the Ansible Playbook, the following command needs to be issued:
+
+\begin{lstlisting}
+ansible-playbook deploy-openstack.yml
+\end{lstlisting}
+
+The deployment of all three nodes takes approximately 7 minutes and requires internet connection.
