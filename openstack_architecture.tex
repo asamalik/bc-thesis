@@ -5,11 +5,11 @@ This chapter describes the OpenStack architecture, how the components communicat
 \section{Conceptual Architecture}
 Conceptual architecture is a high level architecture that shows the core components of a system and their relations including description of responsibilities for each component.
 
-The relationships among the OpenStack services can be seen on picture \ref{fig:openstack_conceptual_arch}.
+The relationships among the OpenStack services can be seen on picture \ref{fig:OpenStack_conceptual_arch}.
 \begin{figure}[!h]
-  \includegraphics[width=\textwidth]{fig/openstack_conceptual_arch.png}
+  \includegraphics[width=\textwidth]{fig/OpenStack_conceptual_arch.png}
   \caption{OpenStack conceptual architecture [Source: \cite{conceptualArch}]}
-  \label{fig:openstack_conceptual_arch}
+  \label{fig:OpenStack_conceptual_arch}
 \end{figure}
 
 
@@ -17,9 +17,11 @@ The relationships among the OpenStack services can be seen on picture \ref{fig:o
 
 
 \section{Logical Architecture}
+Logical architecture shows processes and functions that make the system functioning.
+
 OpenStack consists of several independent parts called OpenStack services.\cite{CL210} Authentication for all services is provided by a common identity service. The services interact with each other via public APIs. \cite{AdminGuide}
 
-OpenStack services are internally composed of several processes. Each service has at least one API process. This API process listens for API requests, does necessary preprocessing and passes them to the respective process or processes within the service. The actual work of a service is done by distinct processes. An exception to this rule is the identity service.
+OpenStack services are internally composed of several processes. Each service has at least one API process. This API process listens for API requests, does necessary preprocessing and passes them to the particular process or processes within the service. The actual work of a service is done by distinct processes. An exception to this rule is the identity service.
 
 The processes within a service communicate with each other via message broker using AMQP protocol. The most used AMQP broker is RabbitMQ, which is also used in this thesis.
 
@@ -27,12 +29,12 @@ The state of a service is stored in a database. OpenStack support several databa
 
 Users can interact with OpenStack in several ways. There is a graphical web-based interface, which is implemented by OpenStack Dashboard. Other ways include command-line clients provided by all basic services, and by API requests using web browser plugins or curl.
 
-The most common, but not the only possible logical architecture can be seen on picture \ref{fig:openstack_logical_arch}.
+The most common, but not the only possible logical architecture can be seen on picture \ref{fig:OpenStack_logical_arch}.
 
 \begin{figure}[!h]
-  \includegraphics[width=\textwidth]{fig/openstack_logical_architecture.png}
+  \includegraphics[width=\textwidth]{fig/OpenStack_logical_architecture.png}
   \caption{OpenStack logical architecture [Source: \cite{logicalArch}]}
-  \label{fig:openstack_logical_arch}
+  \label{fig:OpenStack_logical_arch}
 \end{figure}
 
 \section{Physical Architecture}
@@ -40,18 +42,16 @@ OpenStack is a distributed system, which enables cloud architects to design vari
 
 \textit{“Designing an OpenStack cloud is a great achievement. It requires a robust understanding of the requirements and needs of the cloud’s users to determine the best possible configuration to meet them. OpenStack provides a great deal of flexibility to achieve your needs...”} \cite{OperationsGuide}
 
-In other words, designing a physical architecture for particular deployment is a non-trivial task.
-
 
 
 
 \section{Installation of Core Components}
 
-
+This section will explain each service of the OpenStack cloud in more detail including general description, some basic principles of the function, and a list of components of the service. Some services, such as Compute or Storage, can use several backends for the actual work. List and short description of these backends is also included in this section.
 
 
 \subsection{OpenStack Identity Service}
-The OpenStack identity service provides a single point of authentication and authorisation. When openStack services receive a request from a user, they check with the identity service to verify the authorisation of the user.
+The OpenStack identity service provides a single point of authentication and authorisation. When OpenStack services receive a request from a user, they check with the identity service to verify the authorisation of the user.
 
 It also provides a catalog of OpenStack services. When installing OpenStack cloud, each service needs to be registered in the identity service. The identity service then tracks which services are installed and where they are located on the network.
 
@@ -59,12 +59,12 @@ OpenStack services also use the identity service as a common unified API.
 
 \subsubsection*{Identity Abstractions}
 
-The identity service uses the following abstract organisations:
+The identity service uses the following abstractions:
 \begin{itemize}
   \item{\textbf{Service} is an OpenStack service, such as the identity (Keystone) service, compute (Nova) service, etc.}
-  \item{\textbf{Endpoint} is an address accessible via network and acs as an access-point of a service.}
+  \item{\textbf{Endpoint} is an address accessible via network and acts as an access-point of a service.}
   \item{\textbf{Region} represents a general division of the OpenStack deployment. The identity service also supports sub-regions, which allows the creation of a tree-structured hierarchy.}
-  \item{\textbf{Authentication} is the process of confirming the identity of a user. To confirm an incoming authentication request, the identity service validates a set of credentials supplied by the user. These can be a name and password, or a name and API key. After validation of the user credentials, the identity services then issues an authentication token. This process is done only one on in the beginning of a session and user then provide this token in all subsequent requests.}
+  \item{\textbf{Authentication} is the process of confirming the identity of a user. To confirm an incoming authentication request, the identity service validates a set of credentials supplied by the user. These can be a name and password, or a name and API key. After validation of the user credentials, the identity services then issues an authentication token. This process is done only once on in the beginning of a session and user then provide this token in all subsequent requests.}
   \item{\textbf{Credentials} are data to identify the user, such as name and password, or name and API key.}
   \item{Authentication \textbf{token} is an alpha-numeric string used to access to OpenStack APIs and resources. Token is valid for a finite duration and can be revoked at any time.}
   \item{\textbf{Domain} is a collection of projects and users. This collection defines administrative boundaries for managing identity entities. Domains can be used to represent an individual person, a company, or an operator-owned space. User can be granted the administrator role within a domain. This domain administrator can then create users, projects, and groups in the domains as well as create and assign roles to users or groups.}
@@ -82,7 +82,7 @@ The identity service consists of these components:
 \begin{itemize}
   \item{\textbf{Server} - A centralised server, providing authentication and authorisation services. It uses a RESTful interface.}
   \item{\textbf{Drivers} - Drivers are used to access identity information provided by external repositories like LDAP, or existing SQL databases.}
-  \item{\textbf{Modules} - Middleware modules that check service requests, extract user credentials and send them to the Server for authorisation. The modules are integrated with the OpenStack components by using the Python Web Server Gateway Interface.}
+  \item{\textbf{Modules} - Middleware modules that check service requests, extract user credentials and send them to the Server for authorisation. The modules are integrated with the OpenStack components by using the Python Web Server Gateway Interface (Python WSGI).}
  \\\cite{InstallGuide}
 \end{itemize}
 
@@ -90,7 +90,7 @@ The identity service consists of these components:
 \subsection{OpenStack Image Service}
 The OpenStack Image service controls image storage and management and allows users to discover, register, and retrieve images.
 
-Images provide templates for virtual machine filesystems. Each virtual machine runs from a copy of a base image and several virtual machines can be run from a single image. Any changes made to the virtual machines will not affect the image. Users can also create a snapshot - a state of a virtual machines running disk - and build a new image based on these snapshots.
+Images provide templates for virtual machine filesystems. Each virtual machine runs from a copy of a base image and several virtual machines can be run from a single base image. Any changes made to the virtual machines will not affect the image. Users can also create a snapshot - a state of a virtual machines running disk - and build a new image based on these snapshots.
 
 The implementation of the image service is called Glance. It supports various backends as a storage, which can be normal filesystems, OpenStack object storage, HTTP, RADOS block devices, and Amazon S3. Some of the storage backends can be read-only. The architecture in this thesis will use normal filesystem mounted to the controller node.
 
@@ -108,7 +108,7 @@ The image service consists of the following components:
 
 
 \subsection{OpenStack Compute Service}
-The OpenStack Compute service is the major part of an Infrastructure as a Service (IaaS) system. It runs and manages the virtual machines running in the OpenStack cloud. It can also provide networking for the virtual machines. \cite{InstallGuide}
+The OpenStack Compute service is the major part of an Infrastructure as a Service (IaaS) system. It runs and manages the virtual machines running in the OpenStack cloud. It can also provide networking for the virtual machines. However, Nova networking is not often used. The OpenStack Networking (Neutron) , described in this section, is used instead. \cite{InstallGuide}
 
 The OpenStack Compute service scales horizontally and is commonly deployed on multiple hosts, \cite{OperationsGuide} often called compute nodes.
 
@@ -183,13 +183,13 @@ Before using or deploying the OpenStack Networking service, the following genera
 
   OpenStack uses VLANs to isolate the traffic of different tenants, even when their instances run on a single host.
 
-  Each VLAN has a numerical ID between 1 and 4095. For example, a VLAN with an id of 10 will be referred to as VLAN 15.}
+  Each VLAN has a numerical ID between 1 and 4095. For example, a VLAN with an id of 15 will be referred to as VLAN 15.}
   \item{\textbf{Address Resolution Protocol (ARP)} - As pointed out above, network devices use MAC addresses to be identified. However, TCP/IP applications use IP addresses as an identifiers. The Address Resolution Protocol (ARP) bridges the gap by translating IP addresses into MAC addresses.}
   \item{\textbf{Dynamic Host Configuration Protocol (DHCP)} dynamically assigns IP addresses to network hosts. These hosts are called DHCP clients.}
   \item{\textbf{TCP, UDP, and ICMP} - Software applications communicating over an IP network use another protocols above IP. In the OSI model of networking, they use the fourth layer, which is also referred to as layer 4, or transport layer. There are three main protocols:
     \begin{itemize}
-      \item{\textit{Transmission Control Protocol (TCP)} is the most commonly used layer 4 protocol. It is a connection-oriented protocol.}
-      \item{\textit{User Datagram Protocol (UDP)} is mostly used to transfer real-time information like voice or video. It is a connectionless and unreliable protocol.}
+      \item{\textit{Transmission Control Protocol (TCP)} is the most commonly used layer 4 protocol. It is a connection-oriented protocol. Delivery of packets via this protocol is guaranteed.}
+      \item{\textit{User Datagram Protocol (UDP)} is mostly used to transfer real-time information like voice or video. It is a connectionless and unreliable protocol which means that the delivery of packaets via this protocol is not guaranteed.}
       \item{\textit{Control Message Protocol (ICMP)} is used for sending control messages.}
     \end{itemize}
   }
@@ -214,12 +214,11 @@ OpenStack uses the following concepts to enable users to create their own virtua
 \end{itemize}
 
 \subsubsection*{OpenStack Networking Components}
-The OpenStack Networking service is composed of the following components:
+The OpenStack Networking service is composed of the following components \cite{InstallGuide}:
 \begin{itemize}
   \item{\textbf{neutron-server} - accepts API requests and routes them to the appropriate Networking plug-in}
   \item{\textbf{OpenStack Networking plug-ins and agents} - the main logic is implemented by several plug-ins. They plug and unplug ports, create networks, subnets, and provide IP addressing. OpenStack Networking ships with plug-ins and agents for Cisco virtual and physical switches, NEC OpenFlow products, Open vSwitch, Linux bridging, and the VMware NSX product. The architecture in this thesis will use Linux bridging.}
   \item{\textbf{Messaging queue} - routes the information between neutron-server and other agents. It also act as a database for particular plug-ins. The architecture in this thesis will use centralised RabbitMQ service running on a controller node.}
-  \\\cite{InstallGuide}
 \end{itemize}
 
 The architecture in this thesis will use the following plug-ins and agents for networking:
@@ -241,7 +240,7 @@ The OpenStack Block Storage service adds persistent block storage to a virtual m
 
 The service supports various backends which can be consumed using a Block Storage driver. An example of supported drivers that are available can be NAS/SAN, NFS, iSCSI, Ceph, and more. A usage of multi-backend configuration is also supported. \cite{InstallGuide}
 
-To install the OpenStack Block storage service, it is important to understand a number of concepts, because there are several choices of deployment. \cite{OperationsGuide} Apart from choosing the right storage backend, it mostly depends on the final architecture - which can be single node or multi-node. For example, this thesis uses a multi-node architecture with separate block storage node, and will use a local LVM storage as a backend.
+To install the OpenStack Block storage service, it is important to understand a number of concepts, because there are several choices of deployment. \cite{OperationsGuide} Apart from choosing the right storage backend, it mostly depends on the final architecture - which can be single node or multi-node. For example, in this thesis I use a multi-node architecture with separate block storage node, and will use a local LVM storage as a backend.
 
 \subsubsection*{Logical Volume Management (LVM)}
 Because this thesis will use an LVM as a block storage provider, it is important to understand the basic concepts of LVM.
@@ -256,37 +255,37 @@ LVM creates a layer of abstraction over physical storage, which allows you to cr
 
 As shown on the picture \ref{fig:lvm_architecture}, LVM consists of three basic layers:
 \begin{itemize}
-\item{\textbf{Physical Volume (PV)} is the underlying physical block storage device, which can be a partition or the whole disk. To use the device for LVM, it needs to be initialised as a Physical Volume (PV) by placing a label near the start of the device.}
+\item{\textbf{Physical Volume (PV)} is the underlying physical block storage device, which can be a partition or the whole disk. To use the device for LVM, it needs to be initialised as a Physical Volume (PV).}
 \item{\textbf{Volume Group (VG)} is a combination of several physical volumes. However, volume group can also consist of a single physical volume. This layer provides a pool of disk space used to create logical volumes (LV) in the same way disks are divided into partitions.}
-\item{\textbf{Logical Volume (LV)} is the final volume which is used by filesystems and applications. In LVM, a volume group is divided into several logical volumes.}
+\item{\textbf{Logical Volume (LV)} is the volume used by filesystems and applications. In LVM, a volume group is divided into several logical volumes.}
 \end{itemize}
 
 \subsubsection*{Block Storage Components}
 
-The OpenStack Block Storage service consists of the following components:
+The OpenStack Block Storage service consists of the following components \cite{InstallGuide}:
 \begin{itemize}
 \item{\textbf{cinder-api} - Accepts API requests and routes them to the cinder-volume process for action.}
 \item{\textbf{cinder-volume} - This process manages the read and write requests sent to the Block Storage service. It interacts with the cinder-scheduler and cinder-backup processes and the storage providers, using respective drivers.}
 \item{\textbf{cinder-scheduler daemon} - In multi-node deployments, it selects the optimal storage node on which the volume will be created. This process is similar to the nova-scheduler.}
 \item{\textbf{cinder-backup daemon} - Provides the ability to back up volumes. It can interact with multiple backup storage providers using drivers, in a similar way as the cinder-volume process.}
-\item{\textbf{Messaging queue} - Routes information between the processes within the OpenStack Block Storage service. This thesis uses a centralised RabbitMQ service, running on the controller node.}
-\\\cite{InstallGuide}
+\item{\textbf{Messaging queue} - Routes information between the processes within the OpenStack Block Storage service. In this thesis, I use a centralised RabbitMQ service, running on the controller node.}
 \end{itemize}
 
 
 
 
 \subsection{OpenStack Dashboard Service}
-The OpenStack Dashboard service enables you to manage the OpenStack resources and services. It is used by administrators and the end user. It provides a web-based interface that communicates through the OpenStack APIs. It also allows customising the brand of the dashboard to match the cloud provider's needs. \cite{InstallGuide}
+The OpenStack Dashboard service provides you a way to manage the OpenStack resources and services. It is used by administrators and the end user. It provides a web-based interface that communicates through the OpenStack APIs. It also allows customising the brand of the dashboard to match the cloud provider's needs. \cite{InstallGuide}
 
 \subsubsection*{Handling of User Session Data}
 
-The Dashboard service supports several session backends to handle the user session data:
+The Dashboard service supports several session backends \cite{DeployingHorizon} to handle the user session data:
 \begin{itemize}
-  \item{\textbf{Local Memory Cache} - The quickest and easiest session backend, which does not require external dependencies and is the easy to set up. However, it does not support shared storage across processes or workers, and does not offer data persistency after a process terminates. This is the reason why it is not recommended for production use.}
+  \item{\textbf{Local Memory Cache} - The quickest and easiest session backend, which does not require external dependencies and is the easiest to set up. However, it does not support shared storage across processes or workers, and does not offer data persistency after a process terminates. This is the reason why it is not recommended for production use.}
   \item{\textbf{Memcached} - An external caching service. Supports shared storage and offers data persistency after process or worker terminates. It is extremely fast and efficient cache backend. It requires the memcached service to be running and accessible and a python memcached module installed.}
-  \item{\textbf{Database} - A database can be also used as a caching backend. It is scalable, can be highly-available and offers data persistency. However, it is slow in comparison to other caching methods.}
+  \item{\textbf{Database} - A database can be also used as a caching backend. It is scalable, it can be highly-available and offers data persistency. However, it is slow in comparison to other caching methods.}
   \item{\textbf{Cached Database} - This is a hybrid setting using database and caching infrastructure together.}
   \item{\textbf{Cookies} - Stores data in a cookie in the user's browser. It supports a cryptographic signing to ensure that the data has not been changed during transport. It should be noted, that signing is not the same as encryption, so that the data are still readable by potential attacker.}
-  \\\cite{DeployingHorizon}
 \end{itemize}
+
+In this thesis, I will use the Memcached option.
