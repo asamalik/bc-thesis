@@ -1,14 +1,17 @@
 \chapter{Introduction}
-OpenStack is a cloud operating system with distributed architecture. Deploying OpenStack can be a very complex task requiring deep knowledge in distributed system architecture, networking, storage, and virtualisation. Because of its complexity, it is very hard to create an installation script. These days, OpenStack does not come with an installer. However, there are several projects that try to simplify the process. These solutions are often limited and might not be suitable for production use.
 
-The goal of this thesis is to design and implement an Ansible installation script, called Ansible Playbook, which would enable to install basic OpenStack deployment and would also offer flexibility in configuring more complex scenarios by reusing the Ansible Roles designed in this thesis, and building new, more complex ones on top of them. In other words, the Ansible Playbook designed and implemented here would create a decent starting point for more complex project.
+Originally, server applications were running on dedicated physical servers. If the application needed more resources, the server would be upgraded with additional CPUs, memory, or storage which  required physical access and only allowed adding whole new disk, or whole new memory board. Virtualisation (running virtual machines on a single physical host) solved both limitations, as the virtual machines could be managed remotely and only small chunks of storage or memory could be added. Cloud computing is another step in the evolution, as it creates an abstract layer of resources over multiple servers and provides advanced techniquies such as scheduling and load balancing. All of this is described in more detail in section \ref{se:cloud-intro}.
 
-\section{Structure of the document}
+OpenStack is a cloud platform with distributed architecture, and is briefly described in section \ref{se:openstack-intro}. Deploying OpenStack can be a complex task requiring deep knowledge in distributed system architecture, networking, storage, and virtualisation. Because of its complexity, it is very hard to create an installation script. However, there are several projects that try to simplify the process. They are described in chapter \ref{ch:existing}.
 
-This thesis has been divided into five chapters, excluding this Introduction  and Conclusion \ref{ch:conclusion}.
+However, before I start describing the methods of installing OpenStack, the reader should understand automatic application deployments which is described in section \ref{ch:ansible} using technology called Ansible.
 
-The second chapter, called Technology Overview \ref{ch:overview}, introduces the reader into the technologies that will be used in this thesis. The third chapter \ref{ch:arch} describes the OpenStack architecture, the core services, and how they communicate with each other.
+As said before, OpenStack is a complex system with distributed architecture. It is described in more detail in chapter \ref{ch:arch} which describes the architecture of openstack and its components.
 
-The fourth chapter \ref{ch:existing} offers a short analysis of two existing solutions to deploy the OpenStack cloud and explains their limitations.
+The goal of this thesis is to design and implement an installation script which would enable to install basic OpenStack deployment and would also offer flexibility in configuring more complex scenarios by reusing the individual components of the script. The design of a reference OpenStack architecture and the script is described in chapter \ref{ch:implementation}.
 
-Following chapter \ref{ch:implementation} describes an implementation design of the Ansible Playbook, and also describes a custom architecture, which would be used as a reference and a testing environment. The sixth chapter \ref{ch:testing} shows some details of the implementation process and testing.
+The final chapter \ref{ch:testing} shows some details about the implementation process, describes the testing environment and will also present results of the testing.
+
+\section{Relation with Red Hat}
+
+This thesis has been written in cooperation with Red Hat\footnote{https://www.redhat.com}, a leading open-source technology company. Some parts of the installation script designed and created as part of this thesis will be reused by the Fedora Project\footnote{https://getfedora.org} in its own infrastructure.

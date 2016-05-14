@@ -6,6 +6,7 @@
 \label{ch:overview}
 
 \section{Cloud Computing Introduction}
+\label{se:cloud-intro}
 Originally, we used dedicated servers to run enterprise applications. One application would run on a single physical machine. These machines could be small servers or large mainframes. When an organization grown and their application required more resources, the server would scale up, which means adding more processors, memory, or storage to the host. Is is also referred to as vertical scaling. This method was not flexible enough, as every change required physical access to the datacentre and buying new hardware. Also, it only allowed upgrading by rather large steps, for example by adding whole new hard drive, memory module, etc. This problem has been solved by virtualization.
 
 Virtualization is a technology that enables running several virtual servers on a single host. Every virtual server would have its own operating system and would act as a physical host. These servers could be dynamically scaled up and down without the need of a physical access to the datacentre. New virtual servers could be provisioned, unused servers could be deleted to make space for scaling, which would reflect the business needs in more flexible way then dedicated servers. This method is also referred to as a traditional virtualization. It is because there is a new technology called cloud computing that will be described right now in the following section.
@@ -47,6 +48,7 @@ There are several ways \cite{CL210} where to deploy the cloud computing infrastr
 
 
 \section{OpenStack}
+\label{se:openstack-intro}
 OpenStack is an open-source cloud platform that controls large pools of compute power, storage, and networking resources of one ore more datacentres. These resources are then used to provision virtual machines.
 
 The service is managed by a single web interface called dashboard or a command-line interface, which gives the administrators control over the whole cloud, and users the ability to provision and manage resources via single web interface.
@@ -74,6 +76,7 @@ OpenStack is composed of several components \cite{CL210} called services. Some o
 \end{itemize}
 
 \section{Ansible}
+\label{ch:ansible}
 
 \subsection{What is Ansible}
 Ansible is an automation engine which can be used for application deployment. It is also suitable as a configuration management tool, for orchestration of deployment and provisioning new servers, all of which will be described later in the section. \cite{AnsibleOverview}

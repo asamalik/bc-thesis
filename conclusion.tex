@@ -1,2 +1,13 @@
 \chapter{Conclusion}
 \label{ch:conclusion}
+In this Thesis, I have designed simple OpenStack architecture able to run virtual machines, create tenant networks using software-defined networking (SDN), and use persistent storage. This runs in a multi-tenant environment and is managed by a web interface.
+
+I have also designed and implemented an Ansible playbook which can automatically deploy the architecture on multiple physical hosts. This playbook has been designed to be easy to use to deploy the reference architecture, and, at the same time, to be reusable with modifications for deploying different production environments. The reusability is also simplified by using Ansible roles. There is a separate role for each functionality and they can be deployed on separate hosts.
+
+In comparison to Packstack, it offers more flexibility in terms of architecture changes. This is because I have not used the high level of abstraction Packstack uses. This means that customising the playbook will require much deeper knowledge of the OpenStack cloud compared to using Packstack. While this is an advantage for experienced OpenStack administrators, it can be also disadvantage for beginners.
+
+Compared to the official OpenStack-Ansible project, the playbook created in this thesis installs the OpenStack cloud using RPM packages that can be signed and certified before use.
+
+\section{Future Development}
+
+Some roles will be offered to the Fedora Infrastructure team\footnote{https://fedoraproject.org/wiki/Infrastructure} for their own OpenStack infrastructure which is currently installed by Packstack and customized by Ansible. It might require further development and changes to match their architecture, and it will also require extensive testing before using in production.
