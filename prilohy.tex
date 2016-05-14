@@ -1,6 +1,263 @@
-%\chapter{Obsah CD}
+\chapter{CD Contents}
+
+
+\chapter{Manual}
+
+\section{Using Roles with Variables}
+
+When deploying your own OpenStack cloud, you will need to set your own passwords and configure the right network interfaces to match your infrastructure. All roles designed in this Thesis implement variables which allow you to do the configuration. See the following example to learn how to use roles and variables:
+
+\begin{lstlisting}
+  - name: compute node
+    hosts: compute1
+    sudo: yes
+    roles:
+      - compute-basic
+      - nova-compute
+      - neutron-compute
+    controller_hostname: controller.example.com
+    public_interface_name: eth2
+\end{lstlisting}
+
+The example above applies three roles, \texttt{compute-basic}, \texttt{nova-compute}, and \texttt{neutron-compute} to the compute node with hostname \texttt{compute1}. It also sets two variables \texttt{controller\_hostname} and \texttt{public\_interface\_name} to respective values.
+
+See the following section for list and descriptions of all variables used by each role.
+
+\section{Variables of Individual Roles}
+
+This secton describes all variables used by each role.
+
+\subsection{Role \texttt{keystone}}
+
+The role \texttt{keystone} installs the OpenStack Identity service. Variables used in this role are described in table \ref{table-keystone}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabulary}{\linewidth}{|l|l|L|}
+    \hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+    \texttt{keystone\_db\_password} & \texttt{redhat} & Database password for the OpenStack Keystone service. \\\hline
+    \texttt{keystone\_admin\_token} & \texttt{keystone\_admin\_token} & Admin token for the OpenStack Keystone service. \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+    \texttt{admin\_password} & \texttt{redhat} & Password for the default \texttt{admin} user. \\\hline
+  \end{tabulary}
+\caption{Variables of the \texttt{keystone} role}
+\label{table-keystone}
+\end{table}
+
+
+\subsection{Role \texttt{glance}}
+
+The role \texttt{glance} installs the OpenStack Image service. Variables used in this role are described in table \ref{table-glance}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+
+    \texttt{keystone\_admin\_token} & \texttt{keystone\_admin\_token} & Admin token for the OpenStack Keystone service. \\\hline
+
+    \texttt{glance\_db\_password} & \texttt{redhat} & Database password for the OpenStack Image service. \\\hline
+    \texttt{glance\_password} & \texttt{redhat} & Keystone password for the OpenStack Image service. \\\hline
+  \end{tabular}
+\caption{Variables of the \texttt{glance} role}
+\label{table-glance}
+\end{table}
+
+
+\subsection{Role \texttt{nova-controller}}
+
+The role \texttt{nova-controller} installs the controller services of the OpenStack Compute service. Variables used in this role are described in table \ref{table-nova-controller}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+
+    \texttt{keystone\_admin\_token} & \texttt{keystone\_admin\_token} & Admin token for the OpenStack Keystone service. \\\hline
+
+    \texttt{nova\_db\_password} & \texttt{redhat} & Database password for the OpenStack Compute service. \\\hline
+    \texttt{nova\_password} & \texttt{redhat} & Keystone password for the OpenStack Compute service. \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+    \texttt{controller\_ip} & \texttt{10.0.0.11} & IP address on the interface attached to the Management network. \\\hline
+  \end{tabular}
+\caption{Variables of the \texttt{nova-controller} nova-controller}
+\label{table-nova-controller}
+\end{table}
+
+
+\subsection{Role \texttt{nova-compute}}
+
+The role \texttt{nova-compute} installs the nova-compute component of the OpenStack Compute service. Variables used in this role are described in table \ref{table-nova-compute}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+
+    \texttt{compute\_ip} & \texttt{10.0.0.31} & IP address on the interface attached to the Management network. \\\hline
+    \texttt{nova\_password} & \texttt{redhat} & Keystone password for the OpenStack Compute service. \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+
+  \end{tabular}
+\caption{Variables of the \texttt{nova-compute} role}
+\label{table-nova-compute}
+\end{table}
+
+\subsection{Role \texttt{neutron-controller}}
+
+The role \texttt{neutron-controller} installs the controller services of the OpenStack Networking service. Variables used in this role are described in table \ref{table-neutron-controller}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+
+    \texttt{keystone\_admin\_token} & \texttt{keystone\_admin\_token} & Admin token for the OpenStack Keystone service. \\\hline
+
+    \texttt{neutron\_db\_password} & \texttt{redhat} & Database password for the OpenStack Networking service. \\\hline
+    \texttt{neutron\_password} & \texttt{redhat} & Keystone password for the OpenStack Networking service. \\\hline
+    \texttt{nova\_password} & \texttt{redhat} & Keystone password for the OpenStack Compute service. \\\hline
+
+    \texttt{management\_interface\_name} & \texttt{eth1} & Name of the interface attached to the Management network. \\\hline
+    \texttt{public\_interface\_name} & \texttt{eth2} & Name of the interface attached to the VM network. \\\hline
+    \texttt{overlay\_interface\_ip} & \texttt{10.0.0.11} & IP address on the interface attached to the Management network. \\\hline
+    \texttt{metadata\_secret} & \texttt{metadata\_secret} & A secret for the metadata agent. \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+
+  \end{tabular}
+\caption{Variables of the \texttt{neutron-controller} role}
+\label{table-neutron-controller}
+\end{table}
+
+\subsection{Role \texttt{neutron-compute}}
+
+The role \texttt{neutron-compute} installs the compute services of the OpenStack Networking service. Variables used in this role are described in table \ref{table-neutron-compute}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+    \texttt{neutron\_password} & \texttt{redhat} & Keystone password for the OpenStack Networking service. \\\hline
+    \texttt{public\_interface\_name} & \texttt{eth2} & Name of the interface attached to the VM network. \\\hline
+    \texttt{overlay\_interface\_ip} & \texttt{10.0.0.31} & IP address on the interface attached to the Management network. \\\hline
+
+  \end{tabular}
+\caption{Variables of the \texttt{neutron-compute} role}
+\label{table-neutron-compute}
+\end{table}
+
+\subsection{Role \texttt{cinder-controller}}
+
+The role \texttt{cinder-controller} installs the controller services of the OpenStack Block Storage service. Variables used in this role are described in table \ref{table-cinder-controller}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+    \texttt{controller\_ip} & \texttt{10.0.0.11} & IP address on the interface attached to the Management network. \\\hline
+
+    \texttt{cinder\_password} & \texttt{redhat} & Keystone password for the OpenStack Block Storage service \\\hline
+    \texttt{cinder\_db\_password} & \texttt{redhat} & Database password for the OpenStack Block Storage service \\\hline
+
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+
+  \end{tabular}
+\caption{Variables of the \texttt{cinder-controller} role}
+\label{table-cinder-controller}
+\end{table}
+
+\subsection{Role \texttt{cinder-storage}}
+
+The role \texttt{cinder-storage} installs the storage services of the OpenStack Block Storage service. Variables used in this role are described in table \ref{table-cinder-storage}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+    \texttt{cinder\_db\_password} & \texttt{redhat} & Database password for the OpenStack Block Storage service \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+    \texttt{cinder\_password} & \texttt{redhat} & Keystone password for the OpenStack Block Storage service \\\hline
+
+    \texttt{management\_ip} & \texttt{10.0.0.41} & IP address on the interface attached to the Management network. \\\hline
+    \texttt{cinder\_volume\_group} & \texttt{cinder-volumes} & Name of the volume group used by the OpenStack Block Storage service. \\\hline
+    \texttt{cinder\_partition} & \texttt{/dev/sdb} & Partition used by the OpenStack Block Storage service. \\\hline
+  \end{tabular}
+\caption{Variables of the \texttt{cinder-storage} role}
+\label{table-cinder-storage}
+\end{table}
+
+\subsection{Role \texttt{dashboard}}
+
+The role \texttt{dashboard} installs the OpenStack Dashboard service. Variables used in this role are described in table \ref{table-dashboard}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+  \end{tabular}
+\caption{Variables of the \texttt{dashboard} role}
+\label{table-dashboard}
+\end{table}
+
+
+
+\subsection{Role \texttt{rabbit}}
+
+The role \texttt{rabbit} installs the RabbitMQ message bus. Variables used in this role are described in table \ref{table-rabbit}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{rabbit\_password} & \texttt{redhat} & Password for the AMQP message bus. \\\hline
+  \end{tabular}
+\caption{Variables of the \texttt{rabbit} role}
+\label{table-rabbit}
+\end{table}
+
+
+\subsection{Role \texttt{sql-database}}
+
+The role \texttt{sql-database} installs the MariaDB database. Variables used in this role are described in table \ref{table-sql-database}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|p{5cm}|}\hline
+    Variable Name & Default Value & Description \\\hline
+    \texttt{mysql\_root\_password} & \texttt{redhat} & Root password for the MariaDB database. \\\hline
+    \texttt{controller\_hostname} & \texttt{controller} & Hostname of the controller node. \\\hline
+    \texttt{controller\_management\_ip} & \texttt{10.0.0.11} & IP address on the interface attached to the Management network. \\\hline
+
+  \end{tabular}
+\caption{Variables of the \texttt{sql-database} role}
+\label{table-sql-database}
+\end{table}
+
+
+
+
+
 %\chapter{Manual}
 %\chapter{Konfigrační soubor}
 %\chapter{RelaxNG Schéma konfiguračního soboru}
 %\chapter{Plakat}
-

@@ -32,8 +32,8 @@ Users can interact with OpenStack in several ways. There is a graphical web-base
 The most common, but not the only possible logical architecture can be seen on picture \ref{fig:OpenStack_logical_arch}.
 
 \begin{figure}[!h]
-  \includegraphics[width=\textwidth]{fig/OpenStack_logical_architecture.png}
-  \caption{OpenStack logical architecture [Source: \cite{logicalArch}]}
+  \centerline{\includegraphics[width=14cm]{fig/OpenStack_logical_architecture_2.png}}
+  \caption{OpenStack logical architecture [Source: \cite{OperationsGuide}]}
   \label{fig:OpenStack_logical_arch}
 \end{figure}
 
@@ -248,7 +248,7 @@ Because this thesis will use an LVM as a block storage provider, it is important
 LVM creates a layer of abstraction over physical storage, which allows you to create multiple logical storage volumes. From an application view, these logical volumes are the same as traditional disk partitions. The hardware storage configuration is also hidden from the software, so it can be resized and moved without stopping services or unmounting filesystems. And in an opposite way, the logical volumes can be also resized without changing the underlying physical storage. This solution provides much more flexibility than using traditional partitions directly. \cite{LVMPdf}
 
 \begin{figure}[!h]
-  \includegraphics[width=\textwidth]{fig/lvm_architecture.png}
+  \centerline{\includegraphics[width=8cm]{fig/lvm_architecture.png}}
   \caption{Logical volume architecture [Source: \cite{lvmArch}]}
   \label{fig:lvm_architecture}
 \end{figure}

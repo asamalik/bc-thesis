@@ -1,8 +1,12 @@
 \chapter{Implementation Design}
 \label{ch:implementation}
 
+
+
 \section{Design of the Physical Architecture}
 \label{sec:phys}
+
+Before I can write the Ansible playbook to deploy the OpenStack cloud, I need to know exactly what I need to deploy. I have designed a basic physical architecture that I will use, and this charpter will describe it.
 
 \subsection{Selecting OpenStack Services}
 The first decision when designing an OpenStack cloud deployment is about the services we need to have running.
@@ -12,11 +16,15 @@ For this thesis, I have chosen these five core services:
   \item{OpenStack Identity (Keystone)}
   \item{OpenStack Image (Glance)}
   \item{OpenStack Compute (Nova)}
+  \item{OpenStack Networking (Neutron)}
   \item{OpenStack Block Storage (Cinder)}
   \item{OpenStack Dashboard (Horizon)}
 \end{itemize}
 
-These services will be also required:
+OpenStack consists of several components. I have chosen these six as they are the minimum to have a cloud deployment where I can create virtual machines, attach them to networks, use routers and other networking devices, attach a persistent block storage, and also manage the cloud by a web interface. Implementing more services would be out of the scope of the Thesis.
+
+
+The services mentioned above will require a database to store their states, and a message broker for some processes to communicate. Specifically, these two services will be needed:
 \begin{itemize}
   \item{SQL Database}
   \item{AMQP message broker}
@@ -25,18 +33,35 @@ These services will be also required:
 
 
 \subsection{Selecting Specific Implementations}
-The second decision is about technology. The most important is to choose a specific version of OpenStack. The OpenStack release chosen for this thesis will be Liberty. This is mostly because it is the  latest release at the time of writing the thesis.
+The second decision is about the specific implementation of each technology. The OpenStack cloud comes in several releases. The newest release at the time of writing this Thesis is OpenStack Liberty. I will use this relase as I want to develop for the newest stable version available.
 
-I also need to choose an operating system platform that will run on the physical host machines. Choosing the right Linux distribution is important as there might be big differences in terms of available packages, stability, the lifecycle, and an option of commercial support. The target platform of deployment will be CentOS 7.2. CentOS is free and open source operating system based on the Red Hat Enterprise Linux platform. It uses the RPM packaging model and the OpenStack Liberty packages are included in the repositories. The system is stable, has a long lifecycle and potential migration to to a commercially supported environment would be easy, as it is based on the Red Hat Enterprise Linux platform.
 
-OpenStack also needs an SQL database to store the state of the services, and it also might me used as a storage for the Identity service. In this deployment, it will be used in this way. I have chosen MariaDB because it is open source, widely used and handles memory well.
+I also need to choose an operating system platform that will run on the physical host machines. Choosing the right Linux distribution is important as there might be big differences in terms of available packages, stability, the lifecycle, and an option of commercial support. For this Thesis, I have chosen a CentOS 7.2. CentOS is free and open source operating system based on the Red Hat Enterprise Linux platform. It uses the RPM packaging model and the OpenStack Liberty packages are included in the repositories. The system is stable, has a long lifecycle and potential migration to to a commercially supported environment would be easy, as it is based on the Red Hat Enterprise Linux platform. I have also chose this particular distribution as I know the environment well enough to perform needed configurations and debugging.
 
-The next component is an AMQP broker. It is used by processes within the OpenStack service for communication, and it also might be used as a short-term storage by some networking plugins. For this particular deployment, I will use RabbitMQ because it is an open source solution and it is widely used in production environments. It is also well-supported by the OpenStack itself.
+OpenStack also needs an SQL database to store the state of the services, and it also might be used as a storage for the Identity service. In this deployment, it will be used in this way. I have chosen MariaDB because it is open source and widely used SQL database. It also comes with the CentOS distribution by default.
+
+The next component is an AMQP broker. It is used by processes within the OpenStack services for communication, and it also might be used as a short-term storage by some networking plugins. For this particular deployment, I will use RabbitMQ because it is an open source solution and it is widely used in production environments. It is also well-supported by the OpenStack itself.
 
 The last decision will be about storage backend for the OpenStack Block Storage service. I will use a local disk and an LVM technology. LVM is a robust and stable open source solution for storage that runs on commodity hardware, which is important especially for this testing environment.
 
 
 \subsection{Physical architecture}
+
+With the knowledge of the specific components and their implementations, I can design a physical architecture of the deployment I will be using in this Thesis. The physical architecture can be seen on picture \ref{fig:openstack_physical_arch}. It consists of three hosts, referred to as nodes. The description of the nodes is as follows:
+
+\subsubsection{Controller node}
+The controller node is the central point of this OpenStack architecture. It will controll and command the whole cloud, and it will also store the state of the cloud. It will host both of the external services: MariaDB and RabbitMQ. There will be also the controller parts of the Compute and Block Storage services. To make this setup easier, it will also host the whole Networking service. However, in large production deployments, the Networking service might be installed on a separate node.
+
+The communication between all OpenStack services will go trough this node, as it also hosts the Identity service that will act as an API. Also, the Dashboard service will be deployed to this nodes. The administrators and the end users will be accessing the cloud via the controller node.
+
+\subsubsection{Compute node}
+
+The compute node will host the Nova Compute service and will act as a hypervisor. All instances in the cloud will run on this node. It is designed in a way it can scale horizontally in need of extra resources. It means that there can be serveral compute nodes deployed at the same time. If this happends, the Nova scheduler service deployed on the controller node will automatically choose the most suitable compute node for all new virtual machines.
+
+\subsubsection{Storage node}
+
+The storage node will provide persistent storage to the virtual machines. It has been separated so the storage can scale independently of the compute resources and vice versa. The storage node is designed in a way that it can scale horizontally, in the same way as the compute node which means that there can be more storage nodes deployed at the same time.
+
 
 \begin{figure}[!h]
   \includegraphics[width=\textwidth]{fig/my_architecture.png}
@@ -51,15 +76,28 @@ I have used three different networks in my architecture and each one have differ
   \item{\textbf{Management Network} - This network is used by the OpenStack services to communicate with each other. It will also provide connectivity for the services to the MySQL database and the RabbitMQ Message Queue. All Keystone endpoints based on hostnames will also use this network. It will be also used to connect storage from Storage1 host to virtual machines running on the Compute1 host.}
   \item{\textbf{VM Network} - This network is used to provide outside connectivity to the virtual machines running on the compute node.}
 \end{itemize}
+
+There is a separate Utility and Management network. This is because the IP adresses on the Management network are setted up during the deployment. These two networks can be joined together if the IP adresses are properly set before and will not change during deployment. This information might be important when testing on physical nodes with limited number of network connectors.
+
 It is also important to note that the eth2 interfaces on Controller and Compute1 hosts will use special configuration without an IP address and will be attached to virtual network bridges. Their specific configuration will be mentioned later in the text.
 
 
-
 \section{Design of the Ansible Playbook}
+
+The Ansible playbook will be designed in a way that it will deploy the physical architecture designed above. To achieve this, it will require minimal configuration, such as IP addresses, hostnames, and passwords - so the level of abstraction will be high enough for the administrator to deploy OpenStack without deep knowledge about it as they will only need to know the IP adresses, hostnames, and passwords.
+
+However, the real benefit of this playbook will be in the reusability for different architectures. In addition of configuring the basic options mentioned above, it will be possible to change the script itself to match other architectures. To make this as easy as possible, I will use the minimal level of abstraction when writing the playbook. I will only use the most basic operations such as installing specific packages using yum, changing the OpenStack configuration files, and restarting systemd services. This minimal abstraction will allow to make much more customisations of the playbook than it is possible to do with Packstack. However, it will require much deeper understanding of the OpenStack architecture which might make it harder to use for some people.
+
 \subsection{Ansible Roles}
 The services will be installed on the target hosts using Ansible roles. Roles offer flexibility in a way, that each role can be installed separately on a given host, or, if needed, on multiple hosts. These roles can be then reused to deploy a different physical architectures.
 
 All roles use handlers to restart services in case of a configuration change. All roles are also designed to be idempotent.
+
+There is a role for each OpenStack service. Some services, such as OpenStack Compute and OpenStack Block Storage, will be divided into two roles: the controller part, installed on the controller node, and the functional part, installed on respective nodes.
+
+There will be two other roles to install the database and the AMQP message bus.
+
+Following is the description of each indivitual role.
 
 \subsubsection*{Role \texttt{sql-database}}
 The role sql-database will deploy a MariaDB database on the target host. It will set the root password accordingly and will also remove the anonymous user as well as the test database.
@@ -99,7 +137,7 @@ These roles will install these two packages:
 \end{itemize}
 
 \subsubsection*{Role \texttt{keystone}}
-The keystone role will install the OpenStack Identity service, codename Keystone, on the target host. It requires an SQL database to be running on the network. The example in this thesis will run the database on the controller node.
+The keystone role will install the OpenStack Identity service, codename Keystone, on the target host. It requires an SQL database to be running on the network. The design used in this thesis will run the database on the controller node.
 
 The role will create a database for the Keystone service called keystone.
 
@@ -112,7 +150,7 @@ This role will install the following packages:
   \item{\texttt{python-memcached}}
   \item{\texttt{python-keystoneclient}}
 \end{itemize}
-And will enable and start the httpd service on the target host.
+And it will enable and start the httpd service on the target host.
 
 
 
@@ -141,7 +179,7 @@ The nova-controller role will install some parts of the OpenStack Compute servic
 
 The role will create a database for the Nova service called nova, and registers the Nova service and creates endpoints in the Keystone service.
 
-Besides the standard configurations like setting hostname, configuration of database, and message bus access, the Nova service will be configured to use the OpenStack Networking (as opposed to legacy Nova networking) with the Linux bridge driver.
+Besides the standard configurations such as setting hostname, configuration of database, and message bus access, the Nova service will be configured to use the OpenStack Networking (as opposed to legacy Nova networking) with the Linux bridge driver.
 
 This role will install the following packages:
 \begin{itemize}
@@ -168,7 +206,7 @@ The nova-compute role will install the nova-compute process of the OpenStack Com
 
 The role will configure an access to the necessary Nova processes installed by the nova-controller role, and will also configure Nova to use the OpenStack Networking with the Linux bridge driver.
 
-It will also configure the hypervisor. This role uses the libvirt provider using QEMU. This is because VirtualBox, which is used for testing the deployment, does not support nested virtualisation, so KVM can not be used.
+It will also configure the hypervisor. This role uses the libvirt provider with QEMU. This is because VirtualBox, which is used for testing the deployment, does not support nested virtualisation, so KVM can not be used.
 
 This role will install these two packages:
 \begin{itemize}
@@ -195,11 +233,7 @@ The OpenStack Networking service uses plug-ins and agents for the actual network
 \end{itemize}
 This setup will allow to create tenant networks as well as public provider networks.
 
-The ML2 plugin will be configured to use the Linux bridge technology and VXLAN to create the tenant networks.
-
-The Linux bridge agent will be configured to use VXLAN for the tenant networks and iptables firewall driver to manage security groups.
-
-The layer-3 agent will be configured to use the Linux bridge driver and to support multiple external networks.
+The ML2 plugin will be configured to use the Linux bridge technology and VXLAN to create the tenant networks. The Linux bridge agent will be configured to use VXLAN for the tenant networks and iptables firewall driver to manage security groups. The layer-3 agent will be configured to use the Linux bridge driver and to support multiple external networks.
 
 The DHCP agent will be also configured to use the Linux bridge driver and the MTU is set to 1450 bytes. This is because the VXLAN includes additional packet header and virtual machines running in the cloud use the default MTU of 1500 bytes. Using this settings, the virtual machines will use the smaller MTU, which would allow space for the additional header.
 
@@ -214,7 +248,7 @@ This role will install the following packages:
   \item{\texttt{ebtables}}
   \item{\texttt{ipset}}
 \end{itemize}
-It will restart this Nova service:
+It will restart this service:
 \begin{itemize}
   \item{\texttt{openstack-nova-api}}
 \end{itemize}
@@ -252,6 +286,51 @@ And also the Linux bridge agent service will be started and enabled:
 \end{itemize}
 
 
+
+\subsubsection*{Role \texttt{cinder-controller}}
+
+The cinder-controller role will install the OpenStack Block Storage service, codename Cinder, on the target host. It requires an SQL database, RabbitMQ message bus, and the OpenStack Identity service to be running on the network. The example in this thesis will run all these services on the controller node.
+
+The role will create a database for the Cinder service called cinder, and registers two services called \textit{cinder} and \textit{cinderv2}, and creates endpoints for each service. Two services are created, because the OpenStack Block Storage service currently supports two versions of API. This role will use both for better compatibility.
+
+The following packages will be installed:
+
+\begin{itemize}
+  \item{\texttt{openstack-cinder}}
+  \item{\texttt{python-cinderclient}}
+\end{itemize}
+
+The \texttt{openstack-nova-api} service needs to be restarted first, and then the following services will be enabled and started:
+\begin{itemize}
+  \item{\texttt{openstack-cinder-api}}
+  \item{\texttt{openstack-cinder-scheduler}}
+\end{itemize}
+
+
+\subsubsection*{Role \texttt{cinder-storage}}
+
+This cinder-storage role will install the storage part of the OpenStack Block Storage service, codename Cinder, on the target host. It requires the RabbitMQ message bus to be running on the network. The example in this thesis will run it on the controller node.
+
+At first, the role makes sure that there is a partition available for the storage, and creates an LVM volume group. Then it configures the Block Storage service to use this volume group to create individual volumes of persistent storage for the virtual machines.
+
+The following packages will be installed:
+
+\begin{itemize}
+  \item{\texttt{lvm2}}
+  \item{\texttt{openstack-cinder}}
+  \item{\texttt{targetcli}}
+  \item{\texttt{python-oslo-policy}}
+\end{itemize}
+
+And the following services will be started and enabled:
+
+\begin{itemize}
+  \item{\texttt{openstack-cinder-volume}}
+  \item{\texttt{target}}
+\end{itemize}
+
+
+
 \subsubsection*{Role \texttt{dashboard}}
 The dashboard role will install the OpenStack Dashboard service, codename Horizon, on the target host. The Dashboard service installed by this role uses the Apache httpd web server.
 
@@ -272,35 +351,34 @@ And the following services will be started and enabled:
 
 \subsection{Applying Roles to the Hosts}
 
-The Ansible playbook will apply the roles to the target hosts to match the physical architecture, which has been designed in \ref{sub:phys}
+The main Ansible playbook will apply the roles designed above to particular hosts. See the table \ref{table-roles} for reference about what roles will be applied to which hosts.
 
-The list of nodes and playbooks that will be applied to them:
+Each role will require several parametres such as IP addresses, hostnames, or passwords to be set. This can be also done in the main playbook.
 
-\subsubsection{Controller node}
-
-\begin{itemize}
-  \item{Role controller-basic}
-  \item{Role rabbit}
-  \item{Role sql-database}
-  \item{Role dashboard}
-  \item{Role glance}
-  \item{Role keystone}
-  \item{Role neutron-controller}
-  \item{Role nova-controller}
-  \item{Role cinder-controller}
-\end{itemize}
-
-\subsubsection{Compute node}
-
-\begin{itemize}
-  \item{Role compute-basic}
-  \item{Role neutron-compute}
-  \item{Role nova-compute}
-\end{itemize}
-
-\subsubsection{Storage node}
-
-\begin{itemize}
-  \item{Role storage-basic}
-  \item{Role cinder-storage}
-\end{itemize}
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{|l|l|}
+    \hline
+      Host Name       & Applied Roles                             \\
+    \hline
+    \multirow{9}{*}{Controller node} & \texttt{controller-basic}  \\
+      & \texttt{rabbit} \\
+      & \texttt{sql-database} \\
+      & \texttt{dashboard} \\
+      & \texttt{glance} \\
+      & \texttt{keystone} \\
+      & \texttt{neutron-controller} \\
+      & \texttt{nova-controller} \\
+      & \texttt{cinder-controller} \\
+    \hline
+    \multirow{3}{*}{Compute node} & \texttt{compute-basic} \\
+      & \texttt{neutron-compute} \\
+      & \texttt{nova-compute} \\
+      \hline
+    \multirow{2}{*}{Storage node} & \texttt{storage-basic} \\
+      & \texttt{cinder-storage} \\
+    \hline
+  \end{tabular}
+\caption{Roles applied to the particular hosts}
+\label{table-roles}
+\end{table}

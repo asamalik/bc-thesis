@@ -3,14 +3,15 @@
 \section{Packstack}
 Packstack is a command line installation utility that support deployment of OpenStack on existing server using SSH connection. The installation can be configured interactively or by a configuration file called answer file. \cite{CL210}
 
-It is suitable for deploying proof-of-concept installations. It supports these two basic types of deployment:
+
+It supports these two basic types of deployment \cite{PackstackRDO}:
 \begin{itemize}
   \item{\textbf{An all-on-one installation} - All services are installed on a single physical host that would run all controller services and the virtual machines.}
   \item{\textbf{Multiple nodes} - Using several hosts to run the installations, where there is a single controller node running the controller services, and one or more compute nodes that would run the virtual machines.}
-  \\\cite{PackstackRDO}
+
 \end{itemize}
 
-However, packstack is not suitable for production deployments. This is mainly because it makes many assumptions in the configuration in order to simplify the installation process. It can not deploy the services in a high availability (HA) mode or using load balancers. It also does not support advanced networking configuration, which might be required by more complex setups. \cite{PackstackRedHat}
+However, packstack is not suitable for production deployments. This is mainly because it makes many assumptions about the configuration in order to simplify the installation process. It can not deploy the services in a high availability (HA) mode or using load balancers. It also does not support advanced networking configuration, which might be required by more complex setups. \cite{PackstackRedHat}
 
 \section{OpenStack-Ansible}
 OpenStack-Ansible is an official OpenStack project, still under development. The goal of this project is to be able to deploy OpenStack cloud in a production environment directly from source code. It is focused on Ubuntu Linux and the OpenStack components are installed into Linux Containers (LXC). \cite{OpenStackAnsibleOfficial} \cite{OpenStackAnsibleOfficialGit}
