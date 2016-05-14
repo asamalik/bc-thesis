@@ -79,10 +79,70 @@ host_key_checking = False
 
 \subsection{Running the Deployment}
 
-To use the Ansible Playbook, the following command needs to be issued:
+To deploy the OpenStack cloud in the testing environment using the Ansible playbook, you need to provision the virtual machines and run the playbook. The virtual machines can be provisioned using Vagrant by issuing the following command:
 
 \begin{lstlisting}
-ansible-playbook deploy-openstack.yml
+$ vagrant up
 \end{lstlisting}
 
-The deployment of all three nodes takes approximately 7 minutes and requires internet connection.
+This will create three virtual machines matching the physical architecture. When the virtual machines are ready, you can run the Ansible playbook by issuing the following command:
+
+\begin{lstlisting}
+$ ansible-playbook deploy-openstack.yml
+\end{lstlisting}
+
+This will deploy the OpenStack cloud on the virtual machines created before. The playbook assumes that you have an internet connection available to all three virtual machines. When running the deployment, the installation took approximately 7 minutes.
+
+\subsection{Testing the Deployment}
+
+When the deployment is finished, I have tested the setup using the web interface which was available on \texttt{http://10.0.0.11/dashboard} when using the default configuration. The default login details are:
+
+\begin{itemize}
+  \item{Domain: \texttt{default}}
+  \item{User: \texttt{admin}}
+  \item{Password: \texttt{redhat}}
+\end{itemize}
+
+\subsubsection{Checking Running Services}
+
+The dashboard shows the OpenStack services running in the environment (shown on picture \ref{fig:screenshot_services}), the compute services (shown on picture \ref{fig:screenshot_compute}), the block storage services (shown on picture \ref{fig:screenshot_storage}), and the network agents (shown on picture \ref{fig:screenshot_network}). This means that all the services are up and running.
+
+
+\begin{figure}[!h]
+  \includegraphics[width=\textwidth]{fig/screenshot_services.png}
+  \caption{The OpenStack Dashboard shows the OpenStack services running}
+  \label{fig:screenshot_services}
+\end{figure}
+
+
+\begin{figure}[!h]
+  \includegraphics[width=\textwidth]{fig/screenshot_compute.png}
+  \caption{The OpenStack Dashboard shows the compute services running}
+  \label{fig:screenshot_compute}
+\end{figure}
+
+
+\begin{figure}[!h]
+  \includegraphics[width=\textwidth]{fig/screenshot_storage.png}
+  \caption{The OpenStack Dashboard shows the block storage services running}
+  \label{fig:screenshot_storage}
+\end{figure}
+
+
+\begin{figure}[!h]
+  \includegraphics[width=\textwidth]{fig/screenshot_network.png}
+  \caption{The OpenStack Dashboard shows the network agents running}
+  \label{fig:screenshot_network}
+\end{figure}
+
+
+\subsubsection{Testing the Functionality}
+
+To test the deployment functionality, I have created six virtual machines, two tenant networks, one router, and one provider network. The picture \ref{fig:screenshot} is a screenshot showing the whole environment running in the OpenStadk Dashboard.
+
+
+\begin{figure}[!h]
+  \includegraphics[width=\textwidth]{fig/screenshot.png}
+  \caption{The OpenStack Dashboard shows the testing environment}
+  \label{fig:screenshot}
+\end{figure}

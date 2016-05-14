@@ -45,24 +45,27 @@
 \contentsline {subsection}{\numberline {6.2.1}Description of the Host Environment}{37}{subsection.6.2.1}
 \contentsline {subsection}{\numberline {6.2.2}Using Ansible with Vagrant}{38}{subsection.6.2.2}
 \contentsline {subsection}{\numberline {6.2.3}Running the Deployment}{38}{subsection.6.2.3}
-\contentsline {chapter}{\numberline {7}Conclusion}{39}{chapter.7}
-\contentsline {chapter}{Bibliography}{40}{chapter*.45}
-\contentsline {chapter}{Appendices}{42}{section*.46}
-\contentsline {section}{List of Appendices}{43}{section*.47}
+\contentsline {subsection}{\numberline {6.2.4}Testing the Deployment}{39}{subsection.6.2.4}
+\contentsline {subsubsection}{Checking Running Services}{39}{section*.45}
+\contentsline {subsubsection}{Testing the Functionality}{39}{section*.46}
+\contentsline {chapter}{\numberline {7}Conclusion}{43}{chapter.7}
+\contentsline {chapter}{Bibliography}{44}{chapter*.47}
+\contentsline {chapter}{Appendices}{46}{section*.48}
+\contentsline {section}{List of Appendices}{47}{section*.49}
 \ttl@starttoc {chapters@1}
-\contentsline {chapter}{\numberline {A}CD Contents}{44}{appendix.A}
-\contentsline {chapter}{\numberline {B}Manual}{45}{appendix.B}
-\contentsline {section}{\numberline {B.1}Using Roles with Variables}{45}{section.B.1}
-\contentsline {section}{\numberline {B.2}Variables of Individual Roles}{45}{section.B.2}
-\contentsline {subsection}{\numberline {B.2.1}Role \texttt {keystone}}{45}{subsection.B.2.1}
-\contentsline {subsection}{\numberline {B.2.2}Role \texttt {glance}}{45}{subsection.B.2.2}
-\contentsline {subsection}{\numberline {B.2.3}Role \texttt {nova-controller}}{46}{subsection.B.2.3}
-\contentsline {subsection}{\numberline {B.2.4}Role \texttt {nova-compute}}{46}{subsection.B.2.4}
-\contentsline {subsection}{\numberline {B.2.5}Role \texttt {neutron-controller}}{46}{subsection.B.2.5}
-\contentsline {subsection}{\numberline {B.2.6}Role \texttt {neutron-compute}}{46}{subsection.B.2.6}
-\contentsline {subsection}{\numberline {B.2.7}Role \texttt {cinder-controller}}{47}{subsection.B.2.7}
-\contentsline {subsection}{\numberline {B.2.8}Role \texttt {cinder-storage}}{47}{subsection.B.2.8}
-\contentsline {subsection}{\numberline {B.2.9}Role \texttt {dashboard}}{47}{subsection.B.2.9}
-\contentsline {subsection}{\numberline {B.2.10}Role \texttt {rabbit}}{49}{subsection.B.2.10}
-\contentsline {subsection}{\numberline {B.2.11}Role \texttt {sql-database}}{50}{subsection.B.2.11}
+\contentsline {chapter}{\numberline {A}CD Contents}{48}{appendix.A}
+\contentsline {chapter}{\numberline {B}Manual}{49}{appendix.B}
+\contentsline {section}{\numberline {B.1}Using Roles with Variables}{49}{section.B.1}
+\contentsline {section}{\numberline {B.2}Variables of Individual Roles}{49}{section.B.2}
+\contentsline {subsection}{\numberline {B.2.1}Role \texttt {keystone}}{49}{subsection.B.2.1}
+\contentsline {subsection}{\numberline {B.2.2}Role \texttt {glance}}{49}{subsection.B.2.2}
+\contentsline {subsection}{\numberline {B.2.3}Role \texttt {nova-controller}}{50}{subsection.B.2.3}
+\contentsline {subsection}{\numberline {B.2.4}Role \texttt {nova-compute}}{50}{subsection.B.2.4}
+\contentsline {subsection}{\numberline {B.2.5}Role \texttt {neutron-controller}}{50}{subsection.B.2.5}
+\contentsline {subsection}{\numberline {B.2.6}Role \texttt {neutron-compute}}{50}{subsection.B.2.6}
+\contentsline {subsection}{\numberline {B.2.7}Role \texttt {cinder-controller}}{51}{subsection.B.2.7}
+\contentsline {subsection}{\numberline {B.2.8}Role \texttt {cinder-storage}}{51}{subsection.B.2.8}
+\contentsline {subsection}{\numberline {B.2.9}Role \texttt {dashboard}}{51}{subsection.B.2.9}
+\contentsline {subsection}{\numberline {B.2.10}Role \texttt {rabbit}}{53}{subsection.B.2.10}
+\contentsline {subsection}{\numberline {B.2.11}Role \texttt {sql-database}}{54}{subsection.B.2.11}
 \contentsfinish 
